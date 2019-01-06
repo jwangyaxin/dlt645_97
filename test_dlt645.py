@@ -253,8 +253,7 @@ def read_power(chn, addr, verbose=0):
 
 
 def read_quantity(chn, addr, verbose=0):
-    # page 53, table A3
-    sys.stdout.write('\n--- Read voltage ---\n')
+    sys.stdout.write('\n--- Read quantity ---\n')
     # chn.encode(addr, 0x01, [0x0, 0x1, 0x1, 0x2])
     chn.encode(addr, 0x01, [0x10, 0x90])
     rsp = chn.xchg_data(verbose)
@@ -265,10 +264,42 @@ def read_quantity(chn, addr, verbose=0):
         l = list(s)
         l.insert(-2, '.')
         s = ''.join(l)
-        sys.stdout.write("quantity: %s V\n" % s)
+        sys.stdout.write("quantity: %s kWh\n" % s)
 
     return rsp
 
+def read_ElectricMeterConstant(chn, addr, verbose=0):
+    sys.stdout.write('\n--- Read ElectricMeterConstant ---\n')
+    chn.encode(addr, 0x01, [0x30, 0xC0])
+    rsp = chn.xchg_data(verbose)
+    if rsp:
+        p = chn.rx_payload
+        s = "%02x%02x%02x" % (p[-1], p[-2], p[-3])
+        sys.stdout.write("ElectricMeterConstant: %s imp/kWh\n" % s)
+
+    return rsp
+
+def read_MeterNumber(chn, addr, verbose=0):
+    sys.stdout.write('\n--- Read MeterNumber ---\n')
+    chn.encode(addr, 0x01, [0x32, 0xC0])
+    rsp = chn.xchg_data(verbose)
+    if rsp:
+        p = chn.rx_payload
+        s = "%02x%02x%02x%02x%02x%02x" % (p[-1], p[-2], p[-3], p[-4], p[-5], p[-6])
+        sys.stdout.write("MeterNumber: %s \n" % s)
+
+    return rsp
+
+def read_MeterID(chn, addr, verbose=0):
+    sys.stdout.write('\n--- Read MeterNumber ---\n')
+    chn.encode(addr, 0x01, [0x33, 0xC0])
+    rsp = chn.xchg_data(verbose)
+    if rsp:
+        p = chn.rx_payload
+        s = "%02x%02x%02x%02x%02x%02x" % (p[-1], p[-2], p[-3], p[-4], p[-5], p[-6])
+        sys.stdout.write("MeterID: %s \n" % s)
+
+    return rsp
 
 def read_current(chn, addr, verbose=0):
     sys.stdout.write('\n--- Read current ---\n')
