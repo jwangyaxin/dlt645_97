@@ -473,13 +473,24 @@ def read_preset_billing_time(chn, addr, verbose):
         sys.stdout.write('Preset billing time: %s\n' % s)
     return rsp
 
-def change_passwd(chn, addr, verbose=0):
+def change_passwd(chn, addr, new_password, verbose=0):
     sys.stdout.write('\n--- Change Password ---\n')
-    chn.encode(addr, 0x0f, [0x00, 0x56, 0x34, 0x12, 0x00, 0x56, 0x34, 0x12])
+    chn.encode(addr, 0x0f, new_password)
     rsp = chn.xchg_data(verbose)
     if rsp:
         p = chn.rx_payload
         s = "%02x%02x%02x%02x" % (p[-1], p[-2], p[-3], p[-4])
+        sys.stdout.write("password: %s \n" % s)
+
+    return rsp
+
+def change_address(chn, new_addr, verbose=0):
+    sys.stdout.write('\n--- Change Address ---\n')
+    chn.encode([0xaa]*6, 0x0a, new_addr)
+    rsp = chn.xchg_data(verbose)
+    if rsp:
+        p = chn.rx_payload
+        s = "%02x%02x%02x%02x%02x%02x" % (p[-1], p[-2], p[-3], p[-4], p[-5], p[-6])
         sys.stdout.write("password: %s \n" % s)
 
     return rsp

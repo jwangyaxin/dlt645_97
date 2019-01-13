@@ -19,6 +19,5 @@ if not chn.open():
 rsp = read_meter_address(chn)
 
 if rsp:
-    addr = chn.rx_addr;
-    new_password = [0x00, 0x56, 0x34, 0x12, 0x00, 0x56, 0x34, 0x12]
-    rsp = change_passwd(chn, addr, new_password, verbose)
+    new_addr = [0x17, 0x46, 0x25, 0x44, 0x00, 0x00]
+    rsp = change_address(chn, new_addr, verbose)
