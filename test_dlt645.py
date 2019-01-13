@@ -239,7 +239,8 @@ def read_meter_address(chn, verbose=0):
 def read_power(chn, addr, verbose=0):
     # page 53, table A3
     sys.stdout.write('\n--- Read power ---\n')
-    chn.encode(addr, 0x11, [0x0, 0x0, 0x3, 0x2])
+    #chn.encode(addr, 0x11, [0x0, 0x0, 0x3, 0x2])
+    chn.encode(addr, 0x01, [0x30, 0xB6])
     rsp = chn.xchg_data(verbose)
     if rsp:
         p = chn.rx_payload
@@ -473,6 +474,7 @@ def read_preset_billing_time(chn, addr, verbose):
 
 def read_last_outage_timestamp(chn, addr, index, verbose):
     sys.stdout.write('\n--- Read last outage timestamp of N = %d ---\n' % index)
+    #chn.encode(addr, 0x11, [index, 0x00, 0x11, 0x03])
     chn.encode(addr, 0x11, [index, 0x00, 0x11, 0x03])
     rsp = chn.xchg_data(verbose)
     if rsp:
