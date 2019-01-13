@@ -444,7 +444,8 @@ def read_battery_voltage(chn, addr, verbose):
 
 def read_line_frequency(chn, addr, verbose=0):
     sys.stdout.write('\n--- Read line frequency ---\n')
-    chn.encode(addr, 0x11, [0x02, 0x00, 0x80, 0x02])
+    #chn.encode(addr, 0x11, [0x02, 0x00, 0x80, 0x02])
+    chn.encode(addr, 0x01, [0x64, 0xB6])
     rsp = chn.xchg_data(verbose)
     if rsp:
         if chn.rx_ctrl == 0x91:
