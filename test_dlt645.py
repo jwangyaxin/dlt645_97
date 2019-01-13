@@ -55,12 +55,12 @@ def enter_factory_mode(chn, addr, verbose=0):
     global opid
 
     sys.stdout.write('\n--- Enter factory mode ---\n')
-    cmd = [0x0F, 0x01, 0x00, 0x04]
-    payload = cmd + passwd + opid + [0x0]
-    chn.encode(addr, 0x14, payload)
+    #cmd = [0x0F, 0x01, 0x00, 0x04]
+    payload = cmd + passwd + [0x0]
+    chn.encode(addr, 0x04, payload)
     rsp = chn.xchg_data(verbose=verbose, retry=0)
     if rsp:
-        if chn.rx_ctrl == 0x94:
+        if chn.rx_ctrl == 0x84:
             sys.stdout.write('Enter factory mode success (return code %02x).\n' % chn.rx_ctrl)
         else:
             sys.stdout.write('Enter factory mode failed (return code %02x).\n' % chn.rx_ctrl)
@@ -223,7 +223,7 @@ def load_switch_disconnect(chn, addr, dateline, verbose=0):
     return rsp
 
 
-def read_meter_address(chn, verbose=0):
+def read_meter_address(chn, verbose=1):
     sys.stdout.write('\n--- Read meter address with broadcase mode ---\n')
     chn.encode([0xaa] * 6, 0x13)
     rsp = chn.xchg_data(verbose)
@@ -470,9 +470,19 @@ def read_preset_billing_time(chn, addr, verbose):
     if rsp:
         p = chn.rx_payload
         s = '%02x-%02x %02x:%02x' % (p[-1], p[-2], p[-3], p[-4])
-        sys.stdout.write('Last outage timestamp: %s\n' % s)
+        sys.stdout.write('Preset billing time: %s\n' % s)
     return rsp
 
+def change_passwd(chn, addr, verbose=0):
+    sys.stdout.write('\n--- Change Password ---\n')
+    chn.encode(addr, 0x0f, [0x00, 0x56, 0x34, 0x12, 0x00, 0x56, 0x34, 0x12])
+    rsp = chn.xchg_data(verbose)
+    if rsp:
+        p = chn.rx_payload
+        s = "%02x%02x%02x%02x" % (p[-1], p[-2], p[-3], p[-4])
+        sys.stdout.write("password: %s \n" % s)
+
+    return rsp
 
 def read_last_outage_timestamp(chn, addr, index, verbose):
     sys.stdout.write('\n--- Read last outage timestamp of N = %d ---\n' % index)
