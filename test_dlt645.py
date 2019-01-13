@@ -395,7 +395,8 @@ def read_date(chn, addr, verbose=0):
 
 def read_time(chn, addr, verbose=0):
     sys.stdout.write('\n--- Read time ---\n')
-    chn.encode(addr, 0x11, [0x2, 0x1, 0x0, 0x4])
+    #chn.encode(addr, 0x11, [0x2, 0x1, 0x0, 0x4])
+    chn.encode(addr, 0x01, [0x11, 0xC0])
     rsp = chn.xchg_data(verbose)
     if rsp:
         p = chn.rx_payload
