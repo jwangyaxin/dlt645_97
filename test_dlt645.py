@@ -258,7 +258,6 @@ def read_voltageA(chn, addr, verbose=0):
     rsp = chn.xchg_data(verbose)
     if rsp:
         p = chn.rx_payload
-        # s = "%x%02x" % (p[-1], p[-2])
         s = "%02x%02x" % (p[-1], p[-2])
         sys.stdout.write("voltageA: %s V\n" % s)
 
@@ -271,7 +270,6 @@ def read_currentA(chn, addr, verbose=0):
     rsp = chn.xchg_data(verbose)
     if rsp:
         p = chn.rx_payload
-        # s = "%x%02x" % (p[-1], p[-2])
         s = "%02x%02x" % (p[-1], p[-2])
         l = list(s)
         l.insert(-1, '.')
@@ -285,7 +283,6 @@ def read_quantity(chn, addr, verbose=0):
     rsp = chn.xchg_data(verbose)
     if rsp:
         p = chn.rx_payload
-        # s = "%x%02x" % (p[-1], p[-2])
         s = "%02x%02x%02x%02x" % (p[-1], p[-2], p[-3], p[-4])
         l = list(s)
         l.insert(-2, '.')
@@ -434,13 +431,18 @@ def read_temperature(chn, addr, verbose):
 
 def read_battery_voltage(chn, addr, verbose):
     sys.stdout.write('\n--- Read battery voltage ---\n')
-    chn.encode(addr, 0x11, [0x08, 0x00, 0x80, 0x02])
+    #chn.encode(addr, 0x11, [0x08, 0x00, 0x80, 0x02])
+    chn.encode(addr, 0x01, [0x73, 0xB6])
     rsp = chn.xchg_data(verbose)
     if rsp:
-        p = chn.rx_payload
-        s = '%x.%02x' % (p[-1], p[-2])
-        sys.stdout.write('Battery voltage: %s V\n' % s)
+        if chn.rx_ctrl == 0x81:
+            p = chn.rx_payload
+            s = '%02x' % (p[-1])
+            sys.stdout.write('Battery voltage: %s V\n' % s)
+        else:
+            sys.stdout.write('Fail to read battery voltage.\n')
     return rsp
+
 
 
 def read_line_frequency(chn, addr, verbose=0):
@@ -449,7 +451,7 @@ def read_line_frequency(chn, addr, verbose=0):
     chn.encode(addr, 0x01, [0x64, 0xB6])
     rsp = chn.xchg_data(verbose)
     if rsp:
-        if chn.rx_ctrl == 0x91:
+        if chn.rx_ctrl == 0x81:
             p = chn.rx_payload
             s = "%x%02x" % (p[-1], p[-2])
             l = list(s)
