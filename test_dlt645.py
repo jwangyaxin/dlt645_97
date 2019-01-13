@@ -251,6 +251,31 @@ def read_power(chn, addr, verbose=0):
 
     return rsp
 
+def read_voltageA(chn, addr, verbose=0):
+    sys.stdout.write('\n--- Read voltageA ---\n')
+    chn.encode(addr, 0x01, [0x11, 0xB6])
+    rsp = chn.xchg_data(verbose)
+    if rsp:
+        p = chn.rx_payload
+        # s = "%x%02x" % (p[-1], p[-2])
+        s = "%02x%02x" % (p[-1], p[-2])
+        sys.stdout.write("voltageA: %s V\n" % s)
+
+    return rsp
+
+def read_currentA(chn, addr, verbose=0):
+    sys.stdout.write('\n--- Read currentA ---\n')
+    # chn.encode(addr, 0x01, [0x0, 0x1, 0x1, 0x2])
+    chn.encode(addr, 0x01, [0x21, 0xB6])
+    rsp = chn.xchg_data(verbose)
+    if rsp:
+        p = chn.rx_payload
+        # s = "%x%02x" % (p[-1], p[-2])
+        s = "%02x%02x" % (p[-1], p[-2])
+        l = list(s)
+        l.insert(-1, '.')
+        s = ''.join(l)
+        sys.stdout.write("currentA: %s A\n" % s)
 
 def read_quantity(chn, addr, verbose=0):
     sys.stdout.write('\n--- Read quantity ---\n')
@@ -260,7 +285,7 @@ def read_quantity(chn, addr, verbose=0):
     if rsp:
         p = chn.rx_payload
         # s = "%x%02x" % (p[-1], p[-2])
-        s = "%x%x%x%x" % (p[-1], p[-2], p[-3], p[-4])
+        s = "%02x%02x%02x%02x" % (p[-1], p[-2], p[-3], p[-4])
         l = list(s)
         l.insert(-2, '.')
         s = ''.join(l)
@@ -291,7 +316,7 @@ def read_MeterNumber(chn, addr, verbose=0):
     return rsp
 
 def read_MeterID(chn, addr, verbose=0):
-    sys.stdout.write('\n--- Read MeterNumber ---\n')
+    sys.stdout.write('\n--- Read MeterID ---\n')
     chn.encode(addr, 0x01, [0x33, 0xC0])
     rsp = chn.xchg_data(verbose)
     if rsp:
@@ -300,6 +325,7 @@ def read_MeterID(chn, addr, verbose=0):
         sys.stdout.write("MeterID: %s \n" % s)
 
     return rsp
+
 
 def read_current(chn, addr, verbose=0):
     sys.stdout.write('\n--- Read current ---\n')
@@ -357,7 +383,8 @@ def read_energy(chn, addr, month, segment, verbose=0):
 
 def read_date(chn, addr, verbose=0):
     sys.stdout.write('\n--- Read date ---\n')
-    chn.encode(addr, 0x11, [0x1, 0x1, 0x0, 0x4])
+    #chn.encode(addr, 0x11, [0x1, 0x1, 0x0, 0x4])
+    chn.encode(addr, 0x01, [0x10, 0xC0])
     rsp = chn.xchg_data(verbose)
     if rsp:
         p = chn.rx_payload
@@ -380,7 +407,7 @@ def read_time(chn, addr, verbose=0):
 # --------------------------------------
 def read_temperature(chn, addr, verbose):
     sys.stdout.write('\n--- Read temperature ---\n')
-    chn.encode(addr, 0x11, [0x07, 0x00, 0x80, 0x02])
+    chn.encode(addr, 0x01, [0x07, 0x00, 0x80, 0x02])
     rsp = chn.xchg_data(verbose)
     if rsp:
         p = chn.rx_payload
